@@ -8,6 +8,7 @@ import math
 
 class Game:
     pygame.init()
+
     def __init__(self,width=None, height=None):
         if(width):
             self.width = width
@@ -40,11 +41,14 @@ class Game:
         self.snake_position = [-1,0]
         self.snake_clock = pygame.time.get_ticks()
 
-    def snake_update(self):
+        self.clock = pygame.time.Clock()
+        self.FPS = 60
+
+    def snake_update(self,dt):
         if(self.is_paused or self.is_dead):
             return
 
-        if(pygame.time.get_ticks()-self.snake_clock<200):
+        if(pygame.time.get_ticks()-self.snake_clock<10*dt):
             return
         self.snake_clock = pygame.time.get_ticks()
 
@@ -128,8 +132,10 @@ class Game:
 
     def mainloop(self):
         while(True):
-            self.manage_keys()
+            dt = self.clock.tick(self.FPS)
 
+            #Manage system events and keys
+            self.manage_keys()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -137,16 +143,16 @@ class Game:
                 if(event.type == pygame.KEYDOWN):
                     if event.key == pygame.K_p:
                         self.is_paused = not self.is_paused
+                    
+                    elif(event.key == pygame.K_q):
+                        pygame.quit()
+                        sys.exit()
 
             self.check_collision()
-            self.snake_update()
+            self.snake_update(dt)
             self.screen.fill((0,0,0))
             self.apple.draw(self.screen)
             self.snake.draw(self.screen)
-
-
-
-
 
             if(self.is_paused and not self.is_dead):
                 self.resume.render(self.screen, self.real_position([self.x_max/2*1.02,(self.y_max/2)*1.75]))
@@ -158,11 +164,11 @@ class Game:
             pygame.display.update()
 
     def restart(self):
-        self.score = 0
         self.apple.empty()
         self.snake.empty()
-        self.is_paused = True
         self.init_sprites()
+        self.score = 0
+        self.is_paused = True
 
     def manage_keys(self):
         keys=pygame.key.get_pressed()
