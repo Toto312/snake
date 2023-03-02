@@ -7,6 +7,7 @@ from font import Font
 from grid import real_position
 import sprite
 from snake import Snake
+from apple import Apple
 
 class Game:
     def __init__(self,width=None, height=None):
@@ -38,6 +39,7 @@ class Game:
 
         
         self.snake = Snake([self.width,self.height])
+        self.apple = Apple([self.width,self.height])
 
         self.screen = pygame.display.set_mode((self.width, self.height))
         
@@ -49,62 +51,20 @@ class Game:
         self.resume = Font("Resources/PixeloidSans.ttf", "Press \"p\" to resume the game", False)
         self.score_title = Font("Resources/PixeloidSans.ttf", "Score: {0}".format(self.score), False,35)
 
-        self.apple = pygame.sprite.Group()
-        self.color_apple=(224,113,113)
-
-    def change_apple_position(self):
-        not_posibilites = [self.apple.sprites()[0].rect[0:2]]
-
-        for i in self.snake.sprites():
-            not_posibilites.append(i.rect[0:2])
-
-        position=[]
-        i=0
-        #since i dont want to crash a computer i would mape at least 100 probabilities of iteration
-        for i in range(100):
-            rand = [random.randint(0,self.x_max),random.randint(0,self.y_max)]
-            if(not real_position(rand) in not_posibilites):
-                position=rand
-                break
-
-        if(not position):
-            self.snake.is_paused = True
-            self.is_paused = True
-            print("Won")
-            return
-
-        for i in self.apple:
-            i.change_values(real_position(position))
-
-    def init_apple(self):
-        not_posibilites = []
-
-        for i in self.snake.sprites():
-            not_posibilites.append(i.rect[0:2])
-
-        position=[]
-
-        for i in range(20):
-            rand = [random.randint(0,self.x_max),random.randint(0,self.y_max)]
-            if(not [real_position(rand)] in not_posibilites):
-                position = rand
-                break
-        
-        apple = sprite.Sprite(self.color_apple, self.block_size)
-        apple.change_values(real_position(position))
-        self.apple.add(apple)
-
     def check_collision(self):
         self.is_paused, self.is_dead = self.snake.check_collision()
 
-        if(pygame.sprite.spritecollide(self.snake.head,self.apple,False)):
+        if(self.apple.check_collision(self.snake.head)):
             self.score += 1
-            self.change_apple_position()
+            self.apple.change_position()
             self.snake.increment_body()
             self.score_title.update_text("Score: {0}".format(self.score))
 
     def mainloop(self):
         while(True):
+            #
+            #   Before draw
+            #
             dt = self.clock.tick(self.FPS)/1000
 
             #Manage system events and keys
@@ -125,10 +85,16 @@ class Game:
             self.check_collision()
             self.snake.update(dt)
 
+            #
+            #   After draw
+            #
             self.screen.fill((0,0,0))
-            self.apple.draw(self.screen)
+            self.apple.apple_body.draw(self.screen)
             self.snake.snake_body.draw(self.screen)
             
+            #
+            #   UI draw
+            #
             if(self.is_paused and not self.is_dead):
                 self.resume.render(self.screen, real_position([self.x_max/2*1.02,(self.y_max/2)*1.75]))
             elif(self.is_dead):
@@ -136,11 +102,12 @@ class Game:
             
             self.score_title.render(self.screen,real_position([self.x_max*0.8,1]))
 
+
+
             pygame.display.update()
 
     def restart(self):
-        self.apple.empty()
-        self.init_apple()
+        self.apple.restart()
         self.snake.restart()
         self.score = 0
 
@@ -162,8 +129,8 @@ class Game:
                 self.snake.is_dead = False
                 self.is_dead = False
         
-    def init(self):
-        self.init_apple()
+    def init_sprites(self):
+        self.apple.init()
         self.snake.init()
 
     def real_position(self,coord):
@@ -171,5 +138,5 @@ class Game:
 
 if(__name__=="__main__"):
     g = Game()
-    g.init()
+    g.init_sprites()
     g.mainloop()
