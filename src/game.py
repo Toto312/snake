@@ -45,7 +45,6 @@ class Game:
         self.x_max = max(round(self.width/self.block_size)-1,0)
         self.y_max = max(round(self.height/self.block_size)-1,0)
         
-
         self.game_over = Font("Resources/PixeloidSans.ttf", "Game over. Press \"r\" to play again", False,35)
         self.resume = Font("Resources/PixeloidSans.ttf", "Press \"p\" to resume the game", False)
         self.score_title = Font("Resources/PixeloidSans.ttf", "Score: {0}".format(self.score), False,35)
@@ -61,15 +60,12 @@ class Game:
 
         position=[]
         i=0
-        while(True):
-            if(i==100):
-                break
+        #since i dont want to crash a computer i would mape at least 100 probabilities of iteration
+        for i in range(100):
             rand = [random.randint(0,self.x_max),random.randint(0,self.y_max)]
-            
             if(not real_position(rand) in not_posibilites):
                 position=rand
                 break
-            i+=1
 
         if(not position):
             self.snake.is_paused = True
@@ -103,8 +99,8 @@ class Game:
 
         if(pygame.sprite.spritecollide(self.snake.head,self.apple,False)):
             self.score += 1
-            self.snake.increment_body()
             self.change_apple_position()
+            self.snake.increment_body()
             self.score_title.update_text("Score: {0}".format(self.score))
 
     def mainloop(self):
@@ -143,7 +139,6 @@ class Game:
             pygame.display.update()
 
     def restart(self):
-        print("si")
         self.apple.empty()
         self.init_apple()
         self.snake.restart()

@@ -24,6 +24,8 @@ class Snake:
         self.is_paused = False
         self.is_dead = False
 
+        self.sprite_to_add = None
+
     def init(self,pos=None):
         sprites = sprite.Sprite(self.color, self.block_size)
         if(pos):
@@ -35,14 +37,10 @@ class Snake:
 
     def increment_body(self):
         sprites = sprite.Sprite(self.color, self.block_size)
-        last_sprite_loc = self.snake_body.sprites()[-1].rect[0:2]
-
-        direction_inverted = [-self.direction[0],-self.direction[1]]
-        position_inverted = [grid.real_position(direction_inverted)[0],grid.real_position(direction_inverted)[1]]
-        pos = [last_sprite_loc[0]+position_inverted[0],last_sprite_loc[1]+position_inverted[1]]
-
+        pos = self.snake_body.sprites()[-1].rect[0:2]
         sprites.change_values(pos)
-        self.snake_body.add(sprites)
+
+        self.sprite_to_add = sprites
 
     def move(self):
         if(self.is_paused):
@@ -62,8 +60,11 @@ class Snake:
     def update(self,dt):
         if(pygame.time.get_ticks()-self.update_clock<10000*dt):
             return
-
         self.update_clock = pygame.time.get_ticks()
+
+        if(self.sprite_to_add):
+            self.snake_body.add(self.sprite_to_add)
+            self.sprite_to_add = None
 
         self.move()
 
@@ -72,9 +73,7 @@ class Snake:
             self.head.rect.y < 0 or self.head.rect.y > self.height):
             self.is_paused = True
             self.is_dead = True
-            print("Hola")
         if(len(pygame.sprite.spritecollide(self.head,self.snake_body,False))!=1):
-            print("si")
             self.is_paused = True
             self.is_dead = True
         return [self.is_paused,self.is_dead]
