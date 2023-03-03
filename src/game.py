@@ -47,9 +47,9 @@ class Game:
         self.x_max = max(round(self.width/self.block_size)-1,0)
         self.y_max = max(round(self.height/self.block_size)-1,0)
         
-        self.game_over = Font("Resources/PixeloidSans.ttf", "Game over. Press \"r\" to play again", False,35)
-        self.resume = Font("Resources/PixeloidSans.ttf", "Press \"p\" to resume the game", False)
-        self.score_title = Font("Resources/PixeloidSans.ttf", "Score: {0}".format(self.score), False,35)
+        self.game_over = Font("Resources/PixeloidSans.ttf", "Game over. Press \"r\" to play again", real_position([self.x_max/2,(self.y_max/2)*1.75]),False,35)
+        self.resume = Font("Resources/PixeloidSans.ttf", "Press \"p\" to resume the game", real_position([self.x_max/2*1.02,(self.y_max/2)*1.75]), False)
+        self.score_title = Font("Resources/PixeloidSans.ttf", "Score: {0}".format(self.score),real_position([self.x_max*0.8,1]), False,35)
 
     def check_collision(self):
         self.is_paused, self.is_dead = self.snake.check_collision()
@@ -96,11 +96,11 @@ class Game:
             #   UI draw
             #
             if(self.is_paused and not self.is_dead):
-                self.resume.render(self.screen, real_position([self.x_max/2*1.02,(self.y_max/2)*1.75]))
+                self.resume.render(self.screen)
             elif(self.is_dead):
-                self.game_over.render(self.screen, real_position([self.x_max/2,(self.y_max/2)*1.75]))
+                self.game_over.render(self.screen)
             
-            self.score_title.render(self.screen,real_position([self.x_max*0.8,1]))
+            self.score_title.render(self.screen)
 
 
 
@@ -109,6 +109,7 @@ class Game:
     def restart(self):
         self.score = 0
         self.score_title.update_text("Score: {0}".format(self.score))
+
         self.apple.restart()
         self.snake.restart()
 

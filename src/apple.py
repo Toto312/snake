@@ -7,7 +7,7 @@ class Apple:
     def __init__(self,window_size,block_size = 38):
         self.color = (224,113,113)
         self.block_size = block_size
-        self.apple_body = pygame.sprite.Group()
+        self.apple_body = pygame.sprite.GroupSingle()
         
         self.width = window_size[0]
         self.height = window_size[1]
@@ -21,14 +21,14 @@ class Apple:
         self.apple_body.add(apl)
     def change_position(self):
         position = self.check_posibilities()
-        self.apple_body.sprites()[0].change_values(position)
+        self.apple_body.sprite.change_values(position)
     def check_collision(self,sprite):
         if(pygame.sprite.spritecollide(sprite,self.apple_body,False)):
             return True
         return False
     def check_posibilities(self,snake=None):
         if(len(self.apple_body)==1):
-            not_posibilities = [self.apple_body.sprites()[0].rect[0:2]]
+            not_posibilities = [self.apple_body.sprite.rect[0:2]]
         else:
             not_posibilities = []
         
@@ -40,7 +40,6 @@ class Apple:
             if(not [grid.real_position(rand)] in not_posibilities):
                 return grid.real_position(rand)
     def restart(self):
-        self.apple_body.empty()
         self.init()
 if(__name__=="__main__"):
     pygame.init()
