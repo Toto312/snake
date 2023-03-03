@@ -107,21 +107,30 @@ class Game:
             pygame.display.update()
 
     def restart(self):
+        self.score = 0
+        self.score_title.update_text("Score: {0}".format(self.score))
         self.apple.restart()
         self.snake.restart()
-        self.score = 0
 
         self.is_paused = True
 
     def manage_keys(self):
         keys=pygame.key.get_pressed()
         if(keys[pygame.K_d]):
+            if(self.is_paused):
+                return
             self.snake.change_direction([1,0])
         elif(keys[pygame.K_a] ):
+            if(self.is_paused):
+                return
             self.snake.change_direction([-1,0])
         elif(keys[pygame.K_w]):
+            if(self.is_paused):
+                return
             self.snake.change_direction([0,-1])
         elif(keys[pygame.K_s]):
+            if(self.is_paused):
+                return
             self.snake.change_direction([0,1])
         elif(keys[pygame.K_r]):
             if(self.is_dead):
@@ -132,9 +141,6 @@ class Game:
     def init_sprites(self):
         self.apple.init()
         self.snake.init()
-
-    def real_position(self,coord):
-        return [coord[0]*self.block_size,coord[1]*self.block_size]
 
 if(__name__=="__main__"):
     g = Game()
