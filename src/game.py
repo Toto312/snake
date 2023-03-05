@@ -24,8 +24,8 @@ class Game:
 
         self.score = 0
 
-        self.state = states.StateGame(is_dead=False, is_paused=True)
-        self.windows = window.Window(resolution)
+        self.state = states.StateGame(is_dead=False, is_paused=True, has_restarted=True, is_snake_incrementing=False)
+        self.windows = window.Window(resolution,is_resizable=True)
         self.ui = ui_manager.UIManager(self.state)
         
         self.snake = Snake(self.windows,self.state)
@@ -36,7 +36,7 @@ class Game:
             self.state.change_values(is_dead=True, is_paused=True)
         if(self.apple.check_collision(self.snake.head)):
             self.score += 1
-            self.apple.change_position()
+            self.apple.change_position(self.snake.sprites())
             self.snake.increment_body()
             self.ui.change_name(self.score_title,"Score: {0}".format(self.score))
 
@@ -59,7 +59,7 @@ class Game:
                     sys.exit()
                 if(event.type == pygame.KEYDOWN):
                     if event.key == pygame.K_p:
-                        self.state.change_values(self.state.ret_isDead(), not self.state.is_paused)
+                        self.state.change_values(is_paused= not self.state.is_paused)
                     elif(event.key == pygame.K_q):
                         pygame.quit()
                         sys.exit()
@@ -85,7 +85,7 @@ class Game:
             pygame.display.update()
 
     def restart(self):
-        self.state.change_restarted(has_restarted=True)
+        self.state.change_values(has_restarted=True)
 
         if(pygame.time.get_ticks()-self.restart_clock < 500):
             return
@@ -105,7 +105,7 @@ class Game:
         keys=pygame.key.get_pressed()
 
         # manage movement keys
-        if(not self.state.ret_isPaused()):
+        if(not self.state.ret_values("is_paused")):
 
             if(keys[pygame.K_d]):
                 self.snake.change_direction([1,0])
@@ -149,8 +149,8 @@ class Game:
             real_position([self.windows.x_max*0.2,1]),
             False)
 
-        self.ui.add_font(self.game_over,states.StateGame(is_dead=True, is_paused=True))
-        self.ui.add_font(self.resume,states.StateGame(is_dead=False, is_paused=True))
+        self.ui.add_font(self.game_over,states.StateGame(is_dead=True, is_paused=True,is_snake_incrementing=False,has_restarted=True))
+        self.ui.add_font(self.resume,states.StateGame(is_dead=False, is_paused=True,is_snake_incrementing=False,has_restarted=True))
         self.ui.add_font(self.score_title,"always")
         self.ui.add_font(self.fps_show,"always")
 

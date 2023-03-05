@@ -15,11 +15,10 @@ class UIManager:
             if(i[0].text == font.text):
                 i[0].text = name[:]
 
-            
     def show_fonts(self):
         for i in self.fonts:
             if(i[1] == "always"):
                 i[0].render(self.screen)
 
-            elif(i[1].ret_values() == self.state.ret_values()):
+            elif(i[1].ret_values("all") == self.state.ret_values("all")):
                 i[0].render(self.screen)

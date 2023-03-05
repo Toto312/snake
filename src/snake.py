@@ -45,6 +45,7 @@ class Snake:
 
         self.sprite_to_add = sprites
 
+
     def move(self):
         if(self.state.is_paused):
             return
@@ -89,7 +90,7 @@ class Snake:
         
         # make a min time to move to the next position. 
         # TODO: this could be better if we make a queue where a every direction is added and wen a atime pases execue it
-        if(pygame.time.get_ticks()-self.direction_clock < 130):
+        if(pygame.time.get_ticks()-self.direction_clock < 150):
             return
         self.direction_clock = pygame.time.get_ticks()
 
