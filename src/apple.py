@@ -4,16 +4,16 @@ import grid
 import random
 
 class Apple:
-    def __init__(self,window_size,block_size = 38):
+    def __init__(self,window):
         self.color = (224,113,113)
-        self.block_size = block_size
-        self.apple_body = pygame.sprite.GroupSingle()
-        
-        self.width = window_size[0]
-        self.height = window_size[1]
 
-        self.x_max = max(round(self.width/self.block_size)-1,0)
-        self.y_max = max(round(self.height/self.block_size)-1,0)
+        self.window = window
+
+        self.width = window.width
+        self.height = window.height
+
+        self.block_size = window.block_size
+        self.apple_body = pygame.sprite.GroupSingle()
     def init(self):
         position = self.check_posibilities()
         apl = Sprite(self.color,self.block_size)
@@ -36,7 +36,7 @@ class Apple:
             not_posibilites.append(i.rect[0:2])"""
 
         for i in range(20):
-            rand = [random.randint(0,self.x_max),random.randint(0,self.y_max)]
+            rand = [random.randint(0,self.window.x_max),random.randint(0,self.window.y_max)]
             if(not [grid.real_position(rand)] in not_posibilities):
                 return grid.real_position(rand)
     def restart(self):

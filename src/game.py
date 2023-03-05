@@ -11,40 +11,25 @@ from snake import Snake
 from apple import Apple
 import ui_manager
 import states
+import window
 
 class Game:
-    def __init__(self,width=None, height=None):
+    def __init__(self,resolution=None):
         pygame.init()
-        self.snake_clock = pygame.time.get_ticks()
-        self.FPS = 60
 
+        self.FPS = 60
+        self.snake_clock = pygame.time.get_ticks()
         self.clock = pygame.time.Clock()
         self.restart_clock=0
 
-        self.is_paused = True
-        self.is_dead = False
-
         self.score = 0
 
-        self.state = states.StateGame(self.is_dead, self.is_paused)
-
-        """
-            Things than doesnt need to be in this class
-        """
-
-        self.width = 760
-        self.height = 760
-        
-        self.snake = Snake([self.width,self.height],self.state)
-        self.apple = Apple([self.width,self.height])
-
-        self.screen = pygame.display.set_mode((self.width, self.height))
-        
-        self.block_size = 38
-        self.x_max = max(round(self.width/self.block_size)-1,0)
-        self.y_max = max(round(self.height/self.block_size)-1,0)
-
+        self.state = states.StateGame(is_dead=False, is_paused=True)
+        self.windows = window.Window(resolution)
         self.ui = ui_manager.UIManager(self.state)
+        
+        self.snake = Snake(self.windows,self.state)
+        self.apple = Apple(self.windows)
 
     def check_collision(self):
         if(self.snake.does_collided()):
@@ -86,10 +71,10 @@ class Game:
             #   Draw
             #
             #restart background
-            self.screen.fill((0,0,0))
+            self.windows.screen.fill((0,0,0))
             #draw sprites
-            self.apple.apple_body.draw(self.screen)
-            self.snake.snake_body.draw(self.screen)
+            self.apple.apple_body.draw(self.windows.screen)
+            self.snake.snake_body.draw(self.windows.screen)
             
             #
             #   UI draw
@@ -142,26 +127,26 @@ class Game:
         
         self.game_over = Font("Resources/PixeloidSans.ttf", \
             "Game over. Press \"r\" to play again",
-            real_position([self.x_max/2,(self.y_max/2)*1.75]),
+            real_position([self.windows.x_max/2,(self.windows.y_max/2)*1.75]),
             False,
             35)
 
         self.resume = Font("Resources/PixeloidSans.ttf", \
             "Press \"p\" to resume the game", 
-            real_position([self.x_max/2*1.02,(self.y_max/2)*1.75]),
+            real_position([self.windows.x_max/2*1.02,(self.windows.y_max/2)*1.75]),
             False
             )
 
         self.score_title = Font("Resources/PixeloidSans.ttf", \
             "Score: {0}".format(self.score),
-            real_position([self.x_max*0.8,1]),
+            real_position([self.windows.x_max*0.8,1]),
             False,
             35
             )
 
         self.fps_show = Font("Resources/PixeloidSans.ttf", \
             "Fps: {0}".format(self.clock.get_fps()),
-            real_position([self.x_max*0.2,1]),
+            real_position([self.windows.x_max*0.2,1]),
             False)
 
         self.ui.add_font(self.game_over,states.StateGame(is_dead=True, is_paused=True))

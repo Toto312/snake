@@ -3,16 +3,17 @@ import sprite
 import grid
 
 class Snake:
-    def __init__(self,window_size,state_class,block_size=38):
+    def __init__(self,window,state_class):
         #Get default color
         self.color = (225,225,225)
-        #get default block size
-        self.block_size = block_size
         
-        self.width = window_size[0]
-        self.height = window_size[1]
+        self.width = window.width
+        self.height = window.height
 
-        self.screen = pygame.display.get_surface()
+        #get default block size
+        self.block_size = window.block_size
+
+        self.screen = window.screen_surface()
         self.snake_body = pygame.sprite.Group()
 
         self.update_clock = pygame.time.get_ticks()
