@@ -3,7 +3,7 @@ import sprite
 import grid
 
 class Snake:
-    def __init__(self,window_size,block_size=38):
+    def __init__(self,window_size,state_class,block_size=38):
         #Get default color
         self.color = (225,225,225)
         #get default block size
@@ -17,12 +17,14 @@ class Snake:
 
         self.update_clock = pygame.time.get_ticks()
 
+        self.direction_clock = pygame.time.get_ticks()
+
         #direction where the snake is moving with normalized distance
         #The distance to move depends of the block size
         self.direction = [-1,0]
+        self.direction_changed = []
 
-        self.is_paused = False
-        self.is_dead = False
+        self.state = state_class
 
         self.sprite_to_add = None
 
@@ -43,11 +45,11 @@ class Snake:
         self.sprite_to_add = sprites
 
     def move(self):
-        if(self.is_paused):
+        if(self.state.is_paused):
             return
 
         last_pos = self.head.rect[0:2]
-
+        
         self.head.change_values(grid.real_position(self.direction),True)
             
         for i in range(len(self.sprites())-1):
@@ -57,8 +59,8 @@ class Snake:
 
             last_pos = actual_pos[:]
 
-    def update(self,dt):
-        if(pygame.time.get_ticks()-self.update_clock<10000*dt):
+    def update(self):
+        if(pygame.time.get_ticks()-self.update_clock<150):
             return
         self.update_clock = pygame.time.get_ticks()
 
@@ -68,20 +70,13 @@ class Snake:
 
         self.move()
 
-    def check_collision(self):
+    def does_collided(self):
         if(self.head.rect.x < 0 or self.head.rect.x > self.width or \
             self.head.rect.y < 0 or self.head.rect.y > self.height):
-            self.is_paused = True
-            self.is_dead = True
+            return True
         if(len(pygame.sprite.spritecollide(self.head,self.snake_body,False))!=1):
-            self.is_paused = True
-            self.is_dead = True
-        return [self.is_paused,self.is_dead]
-    
-    def set_states(self,is_paused,is_dead):
-        self.is_paused = is_paused
-        self.is_dead = is_dead
-
+            return True
+        return False
     def restart(self):
         self.snake_body.empty()
         self.init()
@@ -91,6 +86,12 @@ class Snake:
             new_direction[1] == -self.direction[1]):
             return
         
+        # make a min time to move to the next position. 
+        # TODO: this could be better if we make a queue where a every direction is added and wen a atime pases execue it
+        if(pygame.time.get_ticks()-self.direction_clock < 130):
+            return
+        self.direction_clock = pygame.time.get_ticks()
+
         self.direction = new_direction
   
     def sprites(self):
