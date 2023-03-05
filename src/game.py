@@ -162,6 +162,8 @@ class Game:
         self.get_apple = pygame.mixer.Sound("Resources\get apple.mp3")
         self.increment = pygame.mixer.Sound("Resources\increment.mp3")
 
+        self.increment.set_volume(0.4)
+
 if(__name__=="__main__"):
     g = Game()
     g.init()
