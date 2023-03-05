@@ -33,12 +33,16 @@ class Game:
 
     def check_collision(self):
         if(self.snake.does_collided()):
+            if(not self.state.is_dead):
+                self.died.play()
             self.state.change_values(is_dead=True, is_paused=True)
+
         if(self.apple.check_collision(self.snake.head)):
             self.score += 1
             self.apple.change_position(self.snake.sprites())
             self.snake.increment_body()
             self.ui.change_name(self.score_title,"Score: {0}".format(self.score))
+            self.increment.play()
 
     def mainloop(self):
         while(True):
@@ -121,7 +125,7 @@ class Game:
         if(keys[pygame.K_r]):
             self.restart()
 
-    def init_sprites(self):
+    def init(self):
         self.apple.init()
         self.snake.init()
         
@@ -154,7 +158,11 @@ class Game:
         self.ui.add_font(self.score_title,"always")
         self.ui.add_font(self.fps_show,"always")
 
+        self.died = pygame.mixer.Sound("Resources\died.mp3")
+        self.get_apple = pygame.mixer.Sound("Resources\get apple.mp3")
+        self.increment = pygame.mixer.Sound("Resources\increment.mp3")
+
 if(__name__=="__main__"):
     g = Game()
-    g.init_sprites()
+    g.init()
     g.mainloop()
