@@ -12,6 +12,7 @@ from apple import Apple
 import ui_manager
 import states
 import window
+import menu
 
 class Game:
     def __init__(self,resolution=None):
@@ -30,6 +31,8 @@ class Game:
         
         self.snake = Snake(self.windows,self.state)
         self.apple = Apple(self.windows)
+
+        self.menu = menu.Menu(self.state, self.windows)
 
     def check_collision(self):
         if(self.snake.does_collided()):
@@ -56,7 +59,6 @@ class Game:
             #Manage system events and keys
             self.manage_keys()
 
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -77,13 +79,16 @@ class Game:
             #restart background
             self.windows.screen.fill((0,0,0))
             #draw sprites
-            self.apple.apple_body.draw(self.windows.screen)
-            self.snake.snake_body.draw(self.windows.screen)
+            if(self.state.ret_values("is_in_menu")):
+                self.menu.show_sprites()
+            else:
+                self.apple.apple_body.draw(self.windows.screen)
+                self.snake.snake_body.draw(self.windows.screen)
             
-            #
-            #   UI draw
-            #
-            self.ui.show_fonts()
+                #
+                #   UI draw
+                #
+                self.ui.show_fonts()
 
 
             pygame.display.update()
@@ -108,6 +113,9 @@ class Game:
     def manage_keys(self):
         keys=pygame.key.get_pressed()
 
+        if(self.state.ret_values("is_in_menu")):
+            self.menu.manage_keys(keys)
+            return
         # manage movement keys
         if(not self.state.ret_values("is_paused")):
 
@@ -120,10 +128,13 @@ class Game:
             elif(keys[pygame.K_s]):
                 self.snake.change_direction([0,1])
 
-
         # manage misc keys
         if(keys[pygame.K_r]):
             self.restart()
+
+        if(keys[pygame.K_m]):
+            self.state.ret_values("all")
+            #self.state.change_values(is_in_menu=True)
 
     def init(self):
         self.apple.init()
@@ -133,7 +144,7 @@ class Game:
             "Game over. Press \"r\" to play again",
             real_position([self.windows.x_max/2,(self.windows.y_max/2)*1.75]),
             False,
-            35)
+            25)
 
         self.resume = Font("Resources/PixeloidSans.ttf", \
             "Press \"p\" to resume the game", 
@@ -150,8 +161,9 @@ class Game:
 
         self.fps_show = Font("Resources/PixeloidSans.ttf", \
             "Fps: {0}".format(self.clock.get_fps()),
-            real_position([self.windows.x_max*0.2,1]),
-            False)
+            real_position([self.windows.x_max*0.985,self.windows.y_max*0.985]),
+            False,
+            25)
 
         self.ui.add_font(self.game_over,states.StateGame(is_dead=True, is_paused=True,is_snake_incrementing=False,has_restarted=True))
         self.ui.add_font(self.resume,states.StateGame(is_dead=False, is_paused=True,is_snake_incrementing=False,has_restarted=True))
@@ -163,6 +175,12 @@ class Game:
         self.increment = pygame.mixer.Sound("Resources\increment.mp3")
 
         self.increment.set_volume(0.4)
+
+        self.button = pygame.image.load("Resources\\buton.png")
+
+        self.menu.init()
+
+        self.state.change_values(is_in_menu=True)
 
 if(__name__=="__main__"):
     g = Game()

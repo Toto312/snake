@@ -4,6 +4,8 @@ class StateGame:
         self.is_paused = None
         self.is_snake_incrementing = None
         self.has_restarted = None
+        self.is_in_menu = None
+        self.is_on_options = None
         self.change_values(**kwargs)
     
     def change_values(self,**kwargs):
@@ -21,6 +23,10 @@ class StateGame:
                 self.has_restarted = get_values(i)
             elif(i == "is_snake_incrementing"):
                 self.is_snake_incrementing = get_values(i)
+            elif(i == "is_in_menu"):
+                self.is_in_menu = get_values(i)
+            elif(i == "is_on_options"):
+                self.is_on_options = get_values(i)
         
     def ret_values(self,*args):    
         is_one_value = False
@@ -45,6 +51,15 @@ class StateGame:
                 if(is_one_value):
                     return self.is_snake_incrementing
                 out.append(self.is_snake_incrementing)
+            elif(i == "is_in_menu"):
+                if(is_one_value):
+                    return self.is_in_menu
+                out.append(self.is_in_menu)
+            elif(i == "is_on_options"):
+                if(is_one_value):
+                    return self.is_on_options
+                out.append(self.is_on_options)
+                
             elif(i=="all"):
                 return [self.is_dead,self.is_paused,self.has_restarted,self.is_snake_incrementing]
         return out
@@ -53,7 +68,9 @@ class StateGame:
         print("is dead:",self.ret_values("is_dead"),
         "\nis paused:",self.ret_values("is_paused"),
         "\nis snake incrementing:",self.ret_values("is_snake_incrementing"),
-        "\nhas restarted:",self.ret_values("has_restarted")
+        "\nhas restarted:",self.ret_values("has_restarted"),
+        "\nIs on menu:",self.ret_values("is_in_menu"),
+        "\nIs on options:",self.ret_values("is_on_options")
         )
 
         print()
