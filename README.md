@@ -1,5 +1,5 @@
 # Snake
-**Snake** an implementation of the classic Snaka game using python (with pygame)
+**Snake** an implementation of the classic Snake game using python (with pygame)
 
 ## How the game works
 The only thing you have to do is place or delete cells and see what they do!
