@@ -2,7 +2,7 @@
 **Snake** an implementation of the classic Snake game using python (with pygame)
 
 ## How the game works
-The only thing you have to do is place or delete cells and see what they do!
+You will start with the menu. Use the arrow case to select "Play" and you will be playing!
 
 ## Controls
 You only need the wasd keys to move, also you can use p to pause the game
